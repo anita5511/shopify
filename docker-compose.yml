@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shopify_analytics_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rails_api:
+    build:
+      context: ./rails_api
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/shopify_analytics_dev
+      RAILS_ENV: development
+      PYTHON_AI_SERVICE_URL: http://ai_service:8000
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./rails_api:/app
+      - rails_bundle:/usr/local/bundle
+    command: >
+      sh -c "
+        bundle install &&
+        bundle exec rails db:create db:migrate &&
+        bundle exec rails s -b 0.0.0.0 -p 3000
+      "
+
+  ai_service:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      SHOPIFY_MODE: mock
+      LOG_LEVEL: INFO
+    volumes:
+      - ./ai_service:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:
+  rails_bundle:
