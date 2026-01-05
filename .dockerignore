@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# Environment
+.env
+*.env
+!*.env.example
+
+# Rails
+rails_api/log/*
+rails_api/tmp/*
+rails_api/.bundle
+rails_api/vendor/bundle
+
+# Python
+ai_service/__pycache__
+ai_service/*.pyc
+ai_service/.pytest_cache
+ai_service/venv
+ai_service/.venv
+
+# IDE
+.vscode
+.idea
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+coverage
+*.coverage
+htmlcov
