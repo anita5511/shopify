@@ -1,0 +1,32 @@
+# Environment files
+.env
+*.env
+!*.env.example
+
+# Rails
+rails_api/log/*
+rails_api/tmp/*
+rails_api/.bundle
+rails_api/vendor/bundle
+
+# Python
+ai_service/__pycache__/
+ai_service/*.py[cod]
+ai_service/*$py.class
+ai_service/.pytest_cache/
+ai_service/venv/
+ai_service/.venv/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
