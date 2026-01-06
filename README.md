@@ -24,6 +24,10 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed design documentation.
 # Copy environment files
 cp rails_api/.env.example rails_api/.env
 cp ai_service/.env.example ai_service/.env
+
+# Edit .env files to configure:
+# - Shopify credentials (if using real mode)
+# - LLM API key (optional, for enhanced classification)
 ```
 
 ### 2. Start Services
@@ -39,7 +43,7 @@ This will:
 - Start Rails API on port 3000
 - Start Python AI service on port 8000
 
-### 3. Initialize Sample Store (Optional)
+### 3. Initialize Sample Store (Mock Mode)
 
 ```bash
 # Create a mock store in the database
@@ -52,7 +56,7 @@ docker-compose exec rails_api rails runner "Shop.create!(shop_domain: 'demo-stor
 # Health check
 curl http://localhost:3000/health
 
-# Ask a question
+# Ask a question (mock mode)
 curl -X POST http://localhost:3000/api/v1/questions \
   -H "Content-Type: application/json" \
   -d '{
@@ -62,6 +66,16 @@ curl -X POST http://localhost:3000/api/v1/questions \
 ```
 
 See [API_EXAMPLES.md](./API_EXAMPLES.md) for more examples.
+
+## Real Shopify Setup
+
+To use with your actual Shopify store:
+
+1. Follow instructions in [REAL_SHOPIFY_SETUP.md](./REAL_SHOPIFY_SETUP.md)
+2. Your credentials are already configured for store: `ani-15122023.myshopify.com`
+3. Choose your LLM provider (OpenAI, Anthropic, Google, or none)
+4. Run OAuth flow to authenticate
+5. Query your real store data!
 
 ## Mock Mode (Default)
 
@@ -139,10 +153,13 @@ pytest
 ### Implemented
 ✅ Rails API gateway with request validation  
 ✅ Python AI agent with 5-step workflow  
-✅ Intent classification (sales, inventory, customers)  
+✅ **Real Shopify OAuth integration** (full flow implemented)  
+✅ **LLM-powered intent classification** (OpenAI, Anthropic, Google)  
+✅ **LLM-enhanced answer formatting** (optional)  
 ✅ ShopifyQL query generation  
 ✅ Query validation against allowlist  
-✅ Mock Shopify data for demo  
+✅ **Real Shopify API integration** (Admin REST API)  
+✅ Mock Shopify data for demo (deterministic)  
 ✅ Business-friendly answer formatting  
 ✅ Confidence scoring (low/medium/high)  
 ✅ Request logging  
@@ -151,9 +168,30 @@ pytest
 
 ### Bonus Features
 ✅ Query validation layer  
+✅ **Real OAuth flow with HMAC verification**  
+✅ **Multi-LLM support** (OpenAI, Anthropic, Google)  
+✅ **Real-time Shopify data fetching**  
 🔲 Caching layer (documented in ARCHITECTURE.md)  
 🔲 Conversation memory (documented in ARCHITECTURE.md)  
 🔲 Metrics dashboard (documented in ARCHITECTURE.md)  
+
+## Modes
+
+### Mock Mode (Default)
+Perfect for development and demo:
+- No Shopify credentials needed
+- No LLM API key needed
+- Deterministic test data
+- Instant responses
+
+### Real Mode (Production)
+Complete Shopify integration:
+- OAuth authentication flow
+- Real store data via Admin API
+- LLM-powered classification (optional)
+- LLM-enhanced answers (optional)
+
+See [REAL_SHOPIFY_SETUP.md](./REAL_SHOPIFY_SETUP.md) for setup instructions.  
 
 ## Troubleshooting
 
