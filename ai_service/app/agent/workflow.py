@@ -65,7 +65,7 @@ class AgentWorkflow:
             
             # STEP 5: Format Answer
             logger.info("Step 5: Formatting answer...")
-            answer_result = self.answer_formatter.format(
+            answer_result = await self.answer_formatter.format(
                 question=question,
                 intent_result=intent_result,
                 raw_data=raw_data,
