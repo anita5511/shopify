@@ -1,5 +1,6 @@
 from typing import Dict, Any, List
 import logging
+from app.agent.llm_client import LLMClient
 
 logger = logging.getLogger(__name__)
 
@@ -8,9 +9,14 @@ class AnswerFormatter:
     Step 5: Format raw data into business-friendly answers
     
     Converts technical query results into clear, actionable insights
+    Can use LLM to enhance answers with better business language
     """
     
-    def format(self, question: str, intent_result: Dict[str, Any], 
+    def __init__(self):
+        """Initialize with LLM client for answer enhancement"""
+        self.llm_client = LLMClient()
+    
+    async def format(self, question: str, intent_result: Dict[str, Any], 
                raw_data: List[Dict], shopifyql: str) -> Dict[str, Any]:
         """
         Format raw query results into a business-friendly answer
