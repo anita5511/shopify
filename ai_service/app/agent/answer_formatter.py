@@ -35,13 +35,29 @@ class AnswerFormatter:
         
         # Route to appropriate formatter
         if category == 'sales':
-            return self._format_sales_answer(question, intent_result, raw_data)
+            result = self._format_sales_answer(question, intent_result, raw_data)
         elif category == 'inventory':
-            return self._format_inventory_answer(question, intent_result, raw_data)
+            result = self._format_inventory_answer(question, intent_result, raw_data)
         elif category == 'customers':
-            return self._format_customer_answer(question, intent_result, raw_data)
+            result = self._format_customer_answer(question, intent_result, raw_data)
         else:
-            return self._format_general_answer(question, intent_result, raw_data)
+            result = self._format_general_answer(question, intent_result, raw_data)
+        
+        # Try to enhance answer with LLM if available
+        try:
+            data_summary = f"{len(raw_data)} rows, category: {category}, metrics: {metrics}"
+            enhanced_answer = await self.llm_client.enhance_answer(
+                result['answer'], 
+                question, 
+                data_summary
+            )
+            result['answer'] = enhanced_answer
+            logger.info("Answer enhanced with LLM")
+        except Exception as e:
+            logger.debug(f"LLM enhancement skipped: {e}")
+            # Keep original answer if enhancement fails
+        
+        return result
     
     def _format_sales_answer(self, question: str, intent_result: Dict, raw_data: List[Dict]) -> Dict[str, Any]:
         """Format sales-related answers"""
